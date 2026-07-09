@@ -1,0 +1,104 @@
+{
+  "name": "vrm-viewer",
+  "displayName": "VRM Viewer & Animator",
+  "description": "View VRM models and play VRM animations inside VS Code",
+  "version": "1.0.0-alpha.0",
+  "private": true,
+  "packageManager": "pnpm@11.7.0",
+  "license": "MIT",
+  "files": [
+    "dist/",
+    "README.md",
+    "package.json"
+  ],
+  "engines": {
+    "node": "^24.18.0",
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Visualization"
+  ],
+  "main": "./dist/extension.js",
+  "contributes": {
+    "customEditors": [
+      {
+        "viewType": "vrmViewer.viewer",
+        "displayName": "VRM Viewer",
+        "selector": [
+          {
+            "filenamePattern": "*.vrm"
+          }
+        ],
+        "priority": "default"
+      }
+    ],
+    "commands": [
+      {
+        "command": "vrmViewer.openPreview",
+        "title": "VRM: Open Preview"
+      },
+      {
+        "command": "vrmViewer.resetCamera",
+        "title": "VRM: Reset Camera"
+      }
+    ],
+    "menus": {
+      "commandPalette": [
+        {
+          "command": "vrmViewer.openPreview",
+          "when": "resourceExtname == .vrm"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "VRM Viewer",
+      "properties": {
+        "vrmViewer.defaultBackground": {
+          "type": "string",
+          "default": "#2d2d30",
+          "description": "ビューアの背景色"
+        },
+        "vrmViewer.showGrid": {
+          "type": "boolean",
+          "default": true,
+          "description": "グリッド表示"
+        },
+        "vrmViewer.showAxes": {
+          "type": "boolean",
+          "default": true,
+          "description": "XYZ軸表示"
+        },
+        "vrmViewer.lightIntensity": {
+          "type": "number",
+          "default": 1,
+          "description": "環境ライト/キーライトの基準強度"
+        }
+      }
+    }
+  },
+  "scripts": {
+    "build": "tsdown --sourcemap",
+    "build:production": "tsdown --minify --no-sourcemap",
+    "clean": "node scripts/clean.mjs",
+    "watch": "tsdown --watch --sourcemap",
+    "typecheck": "tsc --noEmit",
+    "prepare": "node scripts/prepare-husky.mjs",
+    "prepack": "pnpm run vscode:prepublish",
+    "vscode:prepublish": "pnpm run typecheck && pnpm run clean && pnpm run build:production"
+  },
+  "dependencies": {
+    "@pixiv/three-vrm": "3.5.5",
+    "three": "0.185.1"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^21.2.1",
+    "@commitlint/config-conventional": "^21.2.0",
+    "@tsdown/css": "^0.22.4",
+    "@types/node": "18.19.130",
+    "@types/three": "0.185.1",
+    "@types/vscode": "1.85.0",
+    "husky": "^9.1.7",
+    "tsdown": "^0.22.4",
+    "typescript": "7.0.2"
+  }
+}
