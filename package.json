@@ -82,7 +82,7 @@
     "clean": "node scripts/clean.mjs",
     "watch": "tsdown --watch --sourcemap",
     "typecheck": "tsc --noEmit",
-    "prepare": "node scripts/prepare-husky.mjs",
+    "prepare": "lefthook install",
     "prepack": "pnpm run vscode:prepublish",
     "vscode:prepublish": "pnpm run typecheck && pnpm run clean && pnpm run build:production"
   },
@@ -97,7 +97,7 @@
     "@types/node": "18.19.130",
     "@types/three": "0.185.1",
     "@types/vscode": "1.85.0",
-    "husky": "^9.1.7",
+    "lefthook": "^2.1.0",
     "tsdown": "^0.22.4",
     "typescript": "7.0.2"
   }
