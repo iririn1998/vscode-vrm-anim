@@ -10,6 +10,9 @@ export function activate(context: vscode.ExtensionContext): void {
       webviewOptions: { retainContextWhenHidden: false },
       supportsMultipleEditorsPerDocument: false,
     }),
+    vscode.window.registerWebviewViewProvider(VrmEditorProvider.sidebarViewType, provider, {
+      webviewOptions: { retainContextWhenHidden: true },
+    }),
     vscode.commands.registerCommand("vrmViewer.openPreview", async (uri?: vscode.Uri) => {
       const target = uri ?? vscode.window.activeTextEditor?.document.uri;
 
@@ -24,7 +27,7 @@ export function activate(context: vscode.ExtensionContext): void {
       provider.postToActiveViewer({ type: "viewer:resetCamera" });
     }),
     vscode.commands.registerCommand("vrmViewer.openWebviewPreview", () => {
-      provider.openWebviewPreview();
+      void vscode.commands.executeCommand("workbench.view.extension.vrmViewer");
     }),
   );
 }

@@ -12,11 +12,14 @@ class VrmDocument implements vscode.CustomDocument {
 }
 
 /** Read-only custom editor that hosts the VRM viewer Webview. */
-export class VrmEditorProvider implements vscode.CustomReadonlyEditorProvider<VrmDocument> {
+export class VrmEditorProvider
+  implements vscode.CustomReadonlyEditorProvider<VrmDocument>, vscode.WebviewViewProvider
+{
   public static readonly viewType = "vrmViewer.viewer";
+  public static readonly sidebarViewType = "vrmViewer.sidebar";
 
   private readonly webviews = new Map<string, vscode.WebviewPanel>();
-  private readonly previewWebviews = new Set<vscode.WebviewPanel>();
+  private sidebarWebview: vscode.Webview | undefined;
 
   public constructor(private readonly extensionUri: vscode.Uri) {}
 
@@ -25,11 +28,7 @@ export class VrmEditorProvider implements vscode.CustomReadonlyEditorProvider<Vr
   }
 
   public resolveCustomEditor(document: VrmDocument, panel: vscode.WebviewPanel): void {
-    panel.webview.options = {
-      enableScripts: true,
-      localResourceRoots: [vscode.Uri.joinPath(this.extensionUri, "dist", "webview")],
-    };
-    panel.webview.html = this.getHtml(panel.webview);
+    this.configureWebview(panel.webview);
 
     const documentKey = document.uri.toString();
     this.webviews.set(documentKey, panel);
@@ -40,12 +39,17 @@ export class VrmEditorProvider implements vscode.CustomReadonlyEditorProvider<Vr
       }
     });
 
-    panel.webview.onDidReceiveMessage((message: ViewerMessage) => {
-      if (message.type === "viewer:ready") {
-        void panel.webview.postMessage({
-          type: "viewer:init",
-          fileName: basename(document.uri),
-        } satisfies ViewerMessage);
+    this.registerMessageHandler(panel.webview, basename(document.uri));
+  }
+
+  public resolveWebviewView(webviewView: vscode.WebviewView): void {
+    this.configureWebview(webviewView.webview);
+    this.sidebarWebview = webviewView.webview;
+    this.registerMessageHandler(webviewView.webview, "VRM Viewer");
+
+    webviewView.onDidDispose(() => {
+      if (this.sidebarWebview === webviewView.webview) {
+        this.sidebarWebview = undefined;
       }
     });
   }
@@ -58,35 +62,25 @@ export class VrmEditorProvider implements vscode.CustomReadonlyEditorProvider<Vr
       }
     }
 
-    for (const panel of this.previewWebviews) {
-      if (panel.active) {
-        void panel.webview.postMessage(message);
-        return;
-      }
+    if (this.sidebarWebview) {
+      void this.sidebarWebview.postMessage(message);
     }
   }
 
-  /** Opens the Webview shell without requiring a VRM file. */
-  public openWebviewPreview(): void {
-    const panel = vscode.window.createWebviewPanel(
-      "vrmViewer.preview",
-      "vscode vrm anim",
-      vscode.ViewColumn.Active,
-      {
-        enableScripts: true,
-        localResourceRoots: [vscode.Uri.joinPath(this.extensionUri, "dist", "webview")],
-      },
-    );
+  private configureWebview(webview: vscode.Webview): void {
+    webview.options = {
+      enableScripts: true,
+      localResourceRoots: [vscode.Uri.joinPath(this.extensionUri, "dist", "webview")],
+    };
+    webview.html = this.getHtml(webview);
+  }
 
-    panel.webview.html = this.getHtml(panel.webview);
-    this.previewWebviews.add(panel);
-
-    panel.onDidDispose(() => this.previewWebviews.delete(panel));
-    panel.webview.onDidReceiveMessage((message: ViewerMessage) => {
+  private registerMessageHandler(webview: vscode.Webview, fileName: string): void {
+    webview.onDidReceiveMessage((message: ViewerMessage) => {
       if (message.type === "viewer:ready") {
-        void panel.webview.postMessage({
+        void webview.postMessage({
           type: "viewer:init",
-          fileName: "Webview Preview",
+          fileName,
         } satisfies ViewerMessage);
       }
     });

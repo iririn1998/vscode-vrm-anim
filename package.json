@@ -10,6 +10,7 @@
   "license": "MIT",
   "files": [
     "dist/",
+    "media/",
     "README.md",
     "package.json"
   ],
@@ -64,7 +65,7 @@
       },
       {
         "command": "vrmViewer.openWebviewPreview",
-        "title": "VRM: Open Webview Preview"
+        "title": "VRM: Show Sidebar"
       },
       {
         "command": "vrmViewer.resetCamera",
@@ -76,6 +77,24 @@
         {
           "command": "vrmViewer.openPreview",
           "when": "resourceExtname == .vrm"
+        }
+      ]
+    },
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "vrmViewer",
+          "title": "VRM Viewer",
+          "icon": "media/vrm-viewer.svg"
+        }
+      ]
+    },
+    "views": {
+      "vrmViewer": [
+        {
+          "id": "vrmViewer.sidebar",
+          "name": "VRM Viewer",
+          "type": "webview"
         }
       ]
     },
