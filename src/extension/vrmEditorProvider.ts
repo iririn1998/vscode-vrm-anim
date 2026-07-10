@@ -70,7 +70,7 @@ export class VrmEditorProvider implements vscode.CustomReadonlyEditorProvider<Vr
   public openWebviewPreview(): void {
     const panel = vscode.window.createWebviewPanel(
       "vrmViewer.preview",
-      "VRM Viewer Preview",
+      "vscode vrm anim",
       vscode.ViewColumn.Active,
       {
         enableScripts: true,
