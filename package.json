@@ -38,6 +38,10 @@
         "title": "VRM: Open Preview"
       },
       {
+        "command": "vrmViewer.openWebviewPreview",
+        "title": "VRM: Open Webview Preview"
+      },
+      {
         "command": "vrmViewer.resetCamera",
         "title": "VRM: Reset Camera"
       }
