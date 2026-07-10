@@ -79,12 +79,11 @@
   "scripts": {
     "build": "tsdown --sourcemap",
     "build:production": "tsdown --minify --no-sourcemap",
-    "clean": "node scripts/clean.mjs",
     "watch": "tsdown --watch --sourcemap",
     "typecheck": "tsc --noEmit",
     "prepare": "lefthook install",
     "prepack": "pnpm run vscode:prepublish",
-    "vscode:prepublish": "pnpm run typecheck && pnpm run clean && pnpm run build:production"
+    "vscode:prepublish": "pnpm run typecheck && pnpm run build:production"
   },
   "dependencies": {
     "@pixiv/three-vrm": "3.5.5",
