@@ -10,23 +10,16 @@ export function activate(context: vscode.ExtensionContext): void {
       webviewOptions: { retainContextWhenHidden: false },
       supportsMultipleEditorsPerDocument: false,
     }),
-    vscode.commands.registerCommand(
-      "vrmViewer.openPreview",
-      async (uri?: vscode.Uri) => {
-        const target = uri ?? vscode.window.activeTextEditor?.document.uri;
+    vscode.commands.registerCommand("vrmViewer.openPreview", async (uri?: vscode.Uri) => {
+      const target = uri ?? vscode.window.activeTextEditor?.document.uri;
 
-        if (!target || !target.path.toLowerCase().endsWith(".vrm")) {
-          void vscode.window.showWarningMessage("VRMファイル(.vrm)を選択してください。");
-          return;
-        }
+      if (!target || !target.path.toLowerCase().endsWith(".vrm")) {
+        void vscode.window.showWarningMessage("VRMファイル(.vrm)を選択してください。");
+        return;
+      }
 
-        await vscode.commands.executeCommand(
-          "vscode.openWith",
-          target,
-          VrmEditorProvider.viewType,
-        );
-      },
-    ),
+      await vscode.commands.executeCommand("vscode.openWith", target, VrmEditorProvider.viewType);
+    }),
     vscode.commands.registerCommand("vrmViewer.resetCamera", () => {
       provider.postToActiveViewer({ type: "viewer:resetCamera" });
     }),
